@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>SPA＆Ajax</title>
+<!--<link rel="stylesheet" type="text/css" href="assets/spa.css">-->
+<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script language="javascript" type="text/javascript">
+$(function(){
+    //.sampleをクリックしてajax通信を行う
+    $('.sample_btn').click(function(){
+    
+      let request = {ranNo:5};
+
+        $.ajax({
+            url: 'http://localhost:8080/makeUrl',
+            type: 'GET',
+            contentType: 'application/json',
+            /* json形式で受け取るためdataTypeを変更 */
+            dataType: 'json',
+            data        : JSON.stringify(request),
+        }).done(function(data){
+            /* 通信成功時 */  
+            console.log('通信成功');
+            console.log(data);
+            
+        }).fail(function(data){
+            /* 通信失敗時 */
+            console.log('通信失敗！');
+            console.log(data);
+        });
+    });
+});
+</script>
+</head>
+<body>
+<div class="wrapper">
+  <header class="header">
+      <input type="button" class="sample_btn" value="noFace"/>
+      <div id="output"></div>
+  </header>
+  <main id="spa">
+    <div class="spa"></div>
+  </main>
+</div>
+
+<!--<script src="assets/spa.js"></script>-->
+</body>
+</html>
