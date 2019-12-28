@@ -2,12 +2,10 @@
 from bottle import run, route, get, post, static_file, template, redirect
 from bottle import request
 import mysql.connector
+from time import sleep
 import random
 import json
 import os
-import cgi
-import sys
-import io
 
 #ファイルパス
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -23,32 +21,32 @@ def send_static(filename):
 def index():
     return template('top')
 
+@get('/spa')
+def getIndex():
+    return template('top')
+
 @post('/spa')
 def getMakeUrl():
     #値取得
     data = request.json
     ranNo = data['ranNo']
-    print(ranNo)
+    #print(ranNo)
     #URL取得
     url = dbconn(ranNo)
     #ID NULLチェック
     if isUrlCheck(url):
         print('checkedUrl:')
-
         #json作成
         url = {'id':ranNo, 'url':url}
         url = json.dumps(url)
- 
         print(url)
+        print(type(url))
         return url
     else:
-        postMakeUrl()
+        return reMakeUrl() 
    
+def reMakeUrl():
 
-#POSTの場合
-@post('/makeUrl')
-def postMakeUrl():
-    print("post")
     #ID発番
     ranNo = mkranId()
     print(ranNo)
@@ -57,21 +55,24 @@ def postMakeUrl():
     #ID NULLチェック
     if isUrlCheck(url):
         print('checkedUrl:')
-        print(url)
-        #redirect(url)
-        return template('next',url=url)
+        #json作成
+        jsonUrl = makeJson(ranNo,url)
+        print(type(jsonUrl))
+        print(jsonUrl)
+        return jsonUrl
     else:
-        postMakeUrl()
+        return reMakeUrl()
 
-#ランダムにIdを発番する関数
+
 def mkranId():
+
     setNm = 10
     list(range(setNm))
     ranNo = random.randrange(setNm)
     return ranNo
 
-#URLがNULLでないことを確認する関数
 def isUrlCheck(url):
+
     if url == None:
         print('チェックNG')
         return False
@@ -79,39 +80,64 @@ def isUrlCheck(url):
         print('チェックOK')
         return True
 
-#DBに接続し結果を取得する関数
+def makeJson(ranNo,url):
+    url = {'id':ranNo, 'url':url}
+    jsonUrl = jsonDumps(url)
+    return jsonUrl
+    
+def jsonDumps(url):
+    url = json.dumps(url)
+    return isTypeCheck(url)
+
+def isTypeCheck(jsonUrl):
+    if type(jsonUrl) is str:
+        return jsonUrl
+    else:
+        jsonDumps(jsonUrl)
+    
+
 def dbconn(ranNo):
-    try:
-        #DB設定
-        try:
-            f = open('./conf/prop.json', 'r')
-            info = json.load(f)
-            print('ファイルopen成功')
-        except:
-            print('ファイルopenエラー')
-        conn = mysql.connector.connect(
+
+    f = open('./conf/prop.json', 'r')
+    info = json.load(f)
+    f.close()
+    #DB設定
+    conn = None
+    conn = mysql.connector.connect(
             host = info['host'],
             port = info['port'],
             user = info['user'],
             password = info['password'],
             database = info['database'],
-        )
-        #データベースに接続する
-        c = conn.cursor()
+    )
+    print('ranNo')
+    print(ranNo)
+    #データベースに接続する
+    c = conn.cursor()
+    try:    
         #接続クエリ
         sql = 'SELECT url FROM yahoo_news_urls WHERE id ='
-        #データ登録
-        print('ranNo')
-        print(ranNo)
         #クエリ発行
         c.execute(sql+'%s', [ranNo])
         c.statement
         url = c.fetchone() 
-        #クローズ
-        conn.close()
-        return url[0]
+        
+        if url is not None: 
+            return url[0]
+        else:
+            return None
+
     except:
+        import traceback
+        traceback.print_exc()
         print("DBエラーが発生しました")
+        return None
+    finally:
+        a = c.close()
+        b = conn.close()
+        print('クローズ')
+        print(a)
+        print(b)
 
 if __name__ == "__main__":
     run(host='localhost', port=8080, reloader=True, debug=True)
