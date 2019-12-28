@@ -7,18 +7,22 @@
 <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
 <script language="javascript" type="text/javascript">
 $(function(){
-    //.sampleをクリックしてajax通信を行う
     $('.sample_btn').click(function(){
-    
-      let request = {ranNo:5};
+      var targetUrl = 'http://localhost:8080/spa'
+
+      //ランダム数宇作成
+        
+      var request = {
+          ranNo : 5
+      };
 
         $.ajax({
-            url: 'http://localhost:8080/makeUrl',
-            type: 'GET',
-            contentType: 'application/json',
-            /* json形式で受け取るためdataTypeを変更 */
-            dataType: 'json',
-            data        : JSON.stringify(request),
+            url: targetUrl,
+            type: 'POST',
+            contentType: 'application/JSON',
+            dataType: 'JSON',
+            data : JSON.stringify(request),
+            scriptCharset: 'utf-8',
         }).done(function(data){
             /* 通信成功時 */  
             console.log('通信成功');
@@ -43,7 +47,6 @@ $(function(){
     <div class="spa"></div>
   </main>
 </div>
-
 <!--<script src="assets/spa.js"></script>-->
 </body>
 </html>

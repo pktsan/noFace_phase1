@@ -6,6 +6,8 @@ import random
 import json
 import os
 import cgi
+import sys
+import io
 
 #ファイルパス
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -21,41 +23,27 @@ def send_static(filename):
 def index():
     return template('top')
 
-#GETの場合
-@get('/makeUrl')
+@post('/spa')
 def getMakeUrl():
     #値取得
-    #print("get")
-    #data = request.environ.get('ranNo')
-    #data = params.get('ranNo')
-    #params = FormsDict()
-    #data = request.params('ranNo')
-    
+    data = request.json
+    ranNo = data['ranNo']
+    print(ranNo)
+    #URL取得
+    url = dbconn(ranNo)
+    #ID NULLチェック
+    if isUrlCheck(url):
+        print('checkedUrl:')
 
-
-    #print(data)
-    #print(type(data))
-    #data = request.params.get('ranNo')
-    data = request.params.get.ranNo
-    #query = cgi.parse_qsl(environ.get('ranNo'))
-    #data = parse_query(query)
-    #params = json.loads(data)
-    #c = params['ranNo']
-
-    #print(data)
-    #print(params)
-    #       print(c)
-    
-    testDict = {
-        'one': 1,
-        'two': 2,
-    }
-    result = json.dumps(testDict)
-    
-    print(result)
-    
-    return result
-#return template('top')
+        #json作成
+        url = {'id':ranNo, 'url':url}
+        url = json.dumps(url)
+ 
+        print(url)
+        return url
+    else:
+        postMakeUrl()
+   
 
 #POSTの場合
 @post('/makeUrl')
