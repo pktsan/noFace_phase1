@@ -1,0 +1,18 @@
+.button_position{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.start_button{
+  font-size: 50px;
+  padding: 10px 20px;
+  background-color: rgb(8, 63, 180);
+  color: rgb(214, 206, 222);
+  #-moz-border-radius: 5px;
+  #-webkit-border-radius: 5px;
+  border-radius: 15px;
+  cursor: pointer;
+}
+.start_button:hover{
+  background-color: rgb(96, 93, 233);
+}

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>SPA＆Ajax</title>
+<!--<link rel="stylesheet" type="text/css" href="assets/spa.css">-->
+<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script language="javascript" type="text/javascript">
+$(function(){
+    $('.sample_btn').click(function(){
+      var targetUrl = 'http://localhost:8080/spa'
+
+      //ランダム数宇作成
+      var ranNo = '';
+      var ranNo = Math.floor( Math.random() * 11 );
+      console.log(ranNo);  
+      var request = {
+          'ranNo' : ranNo
+      };
+
+        $.ajax({
+            url: targetUrl,
+            type: 'POST',
+            contentType: 'application/JSON',
+            dataType: 'JSON',
+            data : JSON.stringify(request),
+            scriptCharset: 'utf-8',
+        }).done(function(data){
+            /* 通信成功時 */  
+            console.log('通信成功');
+            console.log(data);
+            
+        }).fail(function(data){
+            /* 通信失敗時 */
+            console.log('通信失敗！');
+            console.log(data);
+        });
+    });
+});
+</script>
+</head>
+<body>
+<div class="wrapper">
+  <header class="header">
+      <input type="button" class="sample_btn" value="noFace"/>
+      <div id="output"></div>
+  </header>
+  <main id="spa">
+    <div class="spa"></div>
+  </main>
+</div>
+<!--<script src="assets/spa.js"></script>-->
+</body>
+</html>
