@@ -7,10 +7,9 @@
 <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
 <script language="javascript" type="text/javascript">
 
-
 //グローバル変数
 var items = [];       
-var setTimes = 10;
+var setTimes = 5;
 //チェック関数
 function checkId(data){
          var id = '';
@@ -25,22 +24,31 @@ function checkId(data){
          } else {
           　checkTimes(items);  
          }  
+
+         $(function() {
+            $('iframe').attr('src', data.url);
+         });
+}
+
+window.onload = function(){
+// ページ読み込み時に実行したい処理
+    getUrl();
 }
 
 function checkTimes(items){
     if (items.length == setTimes){
-        alart('上限回数を超えました');
+        alert('上限5回数を超えました');
         items = [];
     } else {
         getUrl();
         console.log('再取得');
-    }
+    }   
 }
 
 function mkRanNo(){
   //ランダム数宇作成
   var ranNo = '';
-  var ranNo = Math.floor( Math.random() * 11 );
+  var ranNo = Math.floor( Math.random() * 12);
   return ranNo;
   console.log('ranNo');
   console.log(ranNo);  
@@ -48,16 +56,15 @@ function mkRanNo(){
 
 function getUrl(){
   $(function(){
-  //$('.sample_btn').click(function(){
+  
     var targetUrl = 'http://localhost:8080/spa'
-
     ranNo = mkRanNo();
     if (items.indexOf(ranNo) != -1) {
       ranNo = mkRanNo();
       console.log('JSでid再発行');
       console.log(ranNo)
-    } 
-    
+    }
+
     var request = {
         'ranNo' : ranNo
     };
@@ -71,8 +78,7 @@ function getUrl(){
           scriptCharset: 'utf-8',
       }).done(function(data){ 
           /* 通信成功時 */
-          checkId(data);
-     // }).fail(function(data){
+          checkId(data);         
         }).fail(function(data, XMLHttpRequest, textStatus){
           /* 通信失敗時 */
           alert('通信失敗');
@@ -82,7 +88,6 @@ function getUrl(){
           console.log("textStatus     : " + textStatus);
       });
   });
-//});
 }
 
 $(function(){
@@ -93,15 +98,7 @@ $(function(){
 </script>
 </head>
 <body>
-<div class="wrapper">
-  <header class="header">
-      <input type="button" class="sample_btn" value="noFace"/>
-      <div id="output"></div>
-  </header>
-  <main id="spa">
-    <div class="spa"></div>
-  </main>
-</div>
-<!--<script src="assets/spa.js"></script>-->
+  <input type="button" class="sample_btn" value="noFace"/>  	
+  <iframe src="#" width="1250px" height="650px">
 </body>
 </html>

@@ -1,8 +1,7 @@
 # coding:utf-8
-from bottle import run, route, get, post, static_file, template, redirect
-from bottle import request
+from bottle import run, static_file, template, redirect
+from bottle import request, route, get, post
 import mysql.connector
-from time import sleep
 import random
 import json
 import os
@@ -113,7 +112,7 @@ def dbconn(ranNo):
     print('ranNo')
     print(ranNo)
     #データベースに接続する
-    c = conn.cursor()
+    c = conn.cursor()   
     try:    
         #接続クエリ
         sql = 'SELECT url FROM yahoo_news_urls WHERE id ='
