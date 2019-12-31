@@ -29,14 +29,12 @@ def getMakeUrl():
     #値取得
     data = request.json
     ranNo = data['ranNo']
-    #print(ranNo)
     #URL取得
     url = dbconn(ranNo)
     #ID NULLチェック
     if isUrlCheck(url):
         print('checkedUrl:')
         #json作成
-        #url = {'id':ranNo, 'url':url}
         jsonUrl = makeJson(url)
         print(jsonUrl)
         print(type(jsonUrl))
@@ -61,16 +59,13 @@ def reMakeUrl():
     else:
         return reMakeUrl()
 
-
 def mkranId():
-
     setNm = 10
     list(range(setNm))
     ranNo = random.randrange(setNm)
     return ranNo
 
 def isUrlCheck(url):
-
     if url == None:
         print('チェックNG')
         return False
@@ -78,9 +73,7 @@ def isUrlCheck(url):
         print('チェックOK')
         return True
 
-#def makeJson(ranNo,url):
 def makeJson(url):
-    #url = {'id':ranNo, 'url':url}
     jsonUrl = jsonDumps(url)
     return jsonUrl
     
@@ -94,7 +87,6 @@ def isTypeCheck(jsonUrl):
     else:
         jsonDumps(jsonUrl)
     
-
 def dbconn(ranNo):
 
     f = open('./conf/prop.json', 'r')
@@ -111,18 +103,15 @@ def dbconn(ranNo):
     )
     
     #データベースに接続する
-    #c = conn.cursor()
     cur = conn.cursor(dictionary=True)   
     try:    
         #接続クエリ
-        sql = 'SELECT id, title, url FROM yahoo_news_urls WHERE id ='
+        #sql = 'SELECT id, title, url FROM yahoo_news_urls WHERE id ='
+        sql = 'SELECT id, title, url, CAST(dt AS CHAR) AS dt FROM yahoo_news_urls WHERE id ='
         #クエリ発行
-        #デバックのため
-        #ranNo = 5 
         print(ranNo)
         cur.execute(sql+'%s', [ranNo])
         cur.statement    
-        #url = cur.fetchone()
         url = cur.fetchall()
         print(url)
         

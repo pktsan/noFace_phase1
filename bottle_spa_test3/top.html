@@ -43,7 +43,7 @@ function addTags(data){
 
 function checkTimes(items){
     if (items.length > (setTimes)){
-        alert('上限回数を超えました');
+        alert('上限回数を超えました。リロードされます。');
         window.location.reload();
         return false;
     } else {
