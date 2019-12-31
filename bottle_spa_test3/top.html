@@ -6,49 +6,55 @@
 <!--<link rel="stylesheet" type="text/css" href="assets/spa.css">-->
 <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
 <script language="javascript" type="text/javascript">
-
+window.onload = function(){
+// ページ読み込み時に実行したい処理
+    //getUrl();
+}
 //グローバル変数
-var items = [];       
+var items = [];
+//上限回数       
 var setTimes = 5;
+//ランダムIDの範囲
+var ranNoRange = 60;
 //チェック関数
 function checkId(data){
          var id = '';
          id = data.id;
+         //見つからない場合は-1
          if (items.indexOf(id) == -1){
-            items.push(id);
+            items.push(id);    
+            addTags(data);
             console.log('通信成功');
             console.log(data);
             console.log('items');
             console.log(items);
+            console.log(items.indexOf(id));
             console.log('------------------------------------');
-         } else {
+         } else { 
           　checkTimes(items);  
          }  
-
-         $(function() {
-            $('iframe').attr('src', data.url);
-         });
 }
 
-window.onload = function(){
-// ページ読み込み時に実行したい処理
-    getUrl();
+function addTags(data){
+  $(function() {
+    $('ul').append('<li><a href='+data.url+'>'+data.url+'</a></li>');
+  });
 }
 
 function checkTimes(items){
-    if (items.length == setTimes){
-        alert('上限5回数を超えました');
-        items = [];
+    if (items.length >= (setTimes-2)){
+        alert('上限回数を超えました');
+        window.location.reload();
+        return false;
     } else {
-        getUrl();
-        console.log('再取得');
+        return true;
     }   
 }
 
 function mkRanNo(){
   //ランダム数宇作成
   var ranNo = '';
-  var ranNo = Math.floor( Math.random() * 12);
+  var ranNo = Math.floor( Math.random() * ranNoRange);
   return ranNo;
   console.log('ranNo');
   console.log(ranNo);  
@@ -59,10 +65,15 @@ function getUrl(){
   
     var targetUrl = 'http://localhost:8080/spa'
     ranNo = mkRanNo();
+
+    //idが未発番でない場合、回数を
+    //確認して新規発番
     if (items.indexOf(ranNo) != -1) {
-      ranNo = mkRanNo();
-      console.log('JSでid再発行');
-      console.log(ranNo)
+      if (checkTimes(items)) {
+         ranNo = mkRanNo();
+         console.log('JSでid再発行');
+         console.log(ranNo)
+      }
     }
 
     var request = {
@@ -91,7 +102,7 @@ function getUrl(){
 }
 
 $(function(){
-  $('.sample_btn').click(function(){
+  $('.sample_btn').on('click',function(){
     getUrl();
   });
 });
@@ -99,6 +110,7 @@ $(function(){
 </head>
 <body>
   <input type="button" class="sample_btn" value="noFace"/>  	
-  <iframe src="#" width="1250px" height="650px">
+  <ul>
+  </ul>
 </body>
 </html>
