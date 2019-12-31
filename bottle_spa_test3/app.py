@@ -36,16 +36,15 @@ def getMakeUrl():
     if isUrlCheck(url):
         print('checkedUrl:')
         #json作成
-        url = {'id':ranNo, 'url':url}
-        url = json.dumps(url)
-        print(url)
-        print(type(url))
-        return url
+        #url = {'id':ranNo, 'url':url}
+        jsonUrl = makeJson(url)
+        print(jsonUrl)
+        print(type(jsonUrl))
+        return jsonUrl
     else:
         return reMakeUrl() 
    
 def reMakeUrl():
-
     #ID発番
     ranNo = mkranId()
     print(ranNo)
@@ -55,7 +54,7 @@ def reMakeUrl():
     if isUrlCheck(url):
         print('checkedUrl:')
         #json作成
-        jsonUrl = makeJson(ranNo,url)
+        jsonUrl = makeJson(url)
         print(type(jsonUrl))
         print(jsonUrl)
         return jsonUrl
@@ -79,8 +78,9 @@ def isUrlCheck(url):
         print('チェックOK')
         return True
 
-def makeJson(ranNo,url):
-    url = {'id':ranNo, 'url':url}
+#def makeJson(ranNo,url):
+def makeJson(url):
+    #url = {'id':ranNo, 'url':url}
     jsonUrl = jsonDumps(url)
     return jsonUrl
     
@@ -101,7 +101,7 @@ def dbconn(ranNo):
     info = json.load(f)
     f.close()
     #DB設定
-    conn = None
+    
     conn = mysql.connector.connect(
             host = info['host'],
             port = info['port'],
@@ -109,17 +109,22 @@ def dbconn(ranNo):
             password = info['password'],
             database = info['database'],
     )
-    print('ranNo')
-    print(ranNo)
+    
     #データベースに接続する
-    c = conn.cursor()   
+    #c = conn.cursor()
+    cur = conn.cursor(dictionary=True)   
     try:    
         #接続クエリ
-        sql = 'SELECT url FROM yahoo_news_urls WHERE id ='
+        sql = 'SELECT id, title, url FROM yahoo_news_urls WHERE id ='
         #クエリ発行
-        c.execute(sql+'%s', [ranNo])
-        c.statement
-        url = c.fetchone() 
+        #デバックのため
+        #ranNo = 5 
+        print(ranNo)
+        cur.execute(sql+'%s', [ranNo])
+        cur.statement    
+        #url = cur.fetchone()
+        url = cur.fetchall()
+        print(url)
         
         if url is not None: 
             return url[0]
@@ -132,11 +137,8 @@ def dbconn(ranNo):
         print("DBエラーが発生しました")
         return None
     finally:
-        a = c.close()
-        b = conn.close()
-        print('クローズ')
-        print(a)
-        print(b)
-
+        cur.close()
+        conn.close()
+        
 if __name__ == "__main__":
     run(host='localhost', port=8080, reloader=True, debug=True)
