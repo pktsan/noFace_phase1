@@ -20,6 +20,46 @@ def send_static(filename):
 def index():
     return template('top')
 
+@post('/range')
+def getMaxRange():
+    #data = request.json
+    #today = data['today']
+    print('getMaxRange')
+    f = open('./conf/prop.json', 'r')
+    info = json.load(f)
+    f.close()
+    #DB設定
+    
+    conn = mysql.connector.connect(
+            host = info['host'],
+            port = info['port'],
+            user = info['user'],
+            password = info['password'],
+            database = info['database'],
+    )
+    
+    #データベースに接続する
+    cur = conn.cursor(dictionary=True)  
+    try:    
+        #接続クエリ
+        #TODO
+        sql = 'SELECT COUNT(id) AS count FROM yahoo_news_urls'
+        #クエリ発行
+        cur.execute(sql)
+        cur.statement
+        result = cur.fetchall()
+        print(result)
+        jsonResult = json.dumps(result[0])
+        return jsonResult    
+    except:
+        import traceback
+        traceback.print_exc()
+        print("DBエラーが発生しました")
+        return None
+    finally:
+        cur.close()
+        conn.close()
+
 @get('/spa')
 def getIndex():
     return template('top')
@@ -114,7 +154,8 @@ def dbconn(ranNo):
         cur.statement    
         url = cur.fetchall()
         print(url)
-        
+
+
         if url is not None: 
             return url[0]
         else:
@@ -128,6 +169,8 @@ def dbconn(ranNo):
     finally:
         cur.close()
         conn.close()
+    
+
         
 if __name__ == "__main__":
     run(host='localhost', port=8080, reloader=True, debug=True)
