@@ -1,9 +1,7 @@
 import os
-import datetime
-# スリープを使うために必要
-import time                                 
-import mysql.connector
 import json
+import datetime                       
+import mysql.connector
 # Webブラウザを自動操作する（python -m pip install selenium)
 from selenium import webdriver              
 
@@ -38,7 +36,6 @@ def ranking(driver):
             #DB設定
             f = open('./bottle_spa_test3/conf/prop.json', 'r')
             info = json.load(f)
-            print(f)
             f.close()
 
             conn = mysql.connector.connect(
@@ -54,28 +51,22 @@ def ranking(driver):
             #データ登録
             sql = "INSERT INTO testdb.yahoo_news_urls (title,url,dt) VALUES (%s,%s,%s)"
             c.execute(sql, (title, url, dt))
-            print(c)
+            
+            #idを振りなおす
+            sql = 'SET @i := 0' 
+            c.execute(sql)
+            sql = 'UPDATE `testdb`.`yahoo_news_urls` SET id = (@i := @i +1);'
+            c.execute(sql)
+            
             # 挿入した結果を保存（コミット）する
             conn.commit()
             # データベースへのアクセスが終わったら close する
             conn.close()
-        i = i_max + 1
-#    return title_list, link_list   
+        i = i_max + 1   
 
-# ranking関数を実行してタイトルとURLリストを取得する
+# ranking関数を実行
 ranking(driver)
 # ブラウザを閉じる
 driver.quit() 
-# タイトルリストをテキストに保存
-# URLリストをテキストに保存
-#now = datetime.datetime.now()
-#titleFilename = 'output/title_{0:%Y%m%d%H%M}.text'.format(now)
-#linkFilename = 'output/link_{0:%Y%m%d%H%M}.text'.format(now)
-
-#with open(titleFilename, mode='w', encoding='utf-8') as f:
-#    f.write("\n".join(title))
-# URLリストをテキストに保存
-#with open(linkFilename, mode='w', encoding='utf-8') as f:
-#    f.write("\n".join(link))
 # ブラウザを閉じる
 driver.quit()                              
